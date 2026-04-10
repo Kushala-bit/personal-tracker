@@ -25,32 +25,36 @@
         .tab.active[data-target="planner"] { background: var(--planner-yellow); color: #f9a825; }
 
         .content-section { display: none; padding: 30px; animation: fadeIn 0.4s ease; }
-        .content-section.active { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        .content-section.active { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
         
-        .sidebar { background: #fff; padding: 25px; border-radius: 20px; border: 1px solid var(--border); align-self: start; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
-        h3 { margin-top: 0; font-weight: 600; color: #666; font-size: 1.1em; }
-        label { font-size: 0.75em; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 5px; display: block; }
-        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #eee; border-radius: 12px; font-size: 14px; background: #fcfcfc; }
+        .sidebar { padding: 25px; border-radius: 20px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        h3 { margin-top: 0; font-weight: 600; color: #555; font-size: 1.1em; }
+        label { font-size: 0.75em; font-weight: 700; color: #888; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 12px; font-size: 14px; box-sizing: border-box; }
         
-        button.save-btn { background: #444; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; transition: 0.2s; }
+        button.save-btn { background: #333; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; transition: 0.2s; margin-top: 10px; }
         button.save-btn:hover { background: #000; transform: translateY(-2px); }
 
         .dashboard { display: flex; flex-direction: column; gap: 25px; min-width: 0; }
-        .chart-box { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid var(--border); height: 300px; }
+        .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .chart-box { background: #fff; padding: 15px; border-radius: 20px; border: 1px solid var(--border); height: 300px; position: relative; }
         
-        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 20px; border: 1px solid var(--border); }
+        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 20px; border: 1px solid var(--border); margin-top: 10px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f9f9f9; }
-        th { background: #fafafa; font-weight: 600; color: #888; }
+        th, td { padding: 14px; text-align: left; border-bottom: 1px solid #f5f5f5; }
+        th { background: #fcfcfc; font-weight: 600; color: #999; text-transform: uppercase; font-size: 0.75em; }
 
-        .del-btn { color: #ff8a80; cursor: pointer; border: none; background: none; font-size: 1.2em; }
+        .del-btn { color: #ff8a80; cursor: pointer; border: none; background: none; font-size: 1.2em; font-weight: bold; }
 
-        /* Planner */
-        #planner.active { display: grid; grid-template-columns: 1fr; gap: 30px; }
-        .planner-layout { display: grid; grid-template-columns: 400px 1fr; gap: 30px; }
-        #calendar { background: white; padding: 20px; border-radius: 20px; border: 1px solid #eee; height: 500px; }
-        .todo-section { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid #eee; }
-        .todo-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #f5f5f5; }
+        /* Planner Alignment Fix */
+        #planner.active { display: block; }
+        .planner-layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
+        #calendar { background: white; padding: 15px; border-radius: 20px; border: 1px solid #eee; height: 450px; }
+        .todo-section { background: var(--planner-yellow); padding: 20px; border-radius: 20px; border: 1px solid #f9e79f; margin-top: 20px; }
+        .todo-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .todo-item input[type="checkbox"] { width: 18px; height: 18px; margin: 0; cursor: pointer; }
+        
+        .planner-table th { background: var(--planner-yellow); color: #856404; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
@@ -81,7 +85,7 @@
             <button class="save-btn" onclick="save('study')">Add Session</button>
         </div>
         <div class="dashboard">
-            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
+            <div class="chart-grid">
                 <div class="chart-box"><canvas id="studyPie"></canvas></div>
                 <div class="chart-box"><canvas id="studyLine"></canvas></div>
             </div>
@@ -93,17 +97,20 @@
         <div class="sidebar" style="background-color: var(--health-pink);">
             <h3>Health & Wellness</h3>
             <label>Date</label><input type="date" id="healthDate">
-            <label>Bedtime (Previous Night)</label><input type="time" id="bedTime">
+            <label>Bedtime (Prev Night)</label><input type="time" id="bedTime">
             <label>Wake Up Time</label><input type="time" id="wakeTime">
             <label>Energy Level (1-10)</label><input type="number" id="energy">
             <label>Exercise Type</label><input type="text" id="exerciseType">
-            <label>Exercise Time (Minutes)</label><input type="number" id="exerciseTime">
+            <label>Exercise Time (Mins)</label><input type="number" id="exerciseTime">
             <label>Current Mood</label><select id="mood"><option>Happy</option><option>Productive</option><option>Neutral</option><option>Tired</option></select>
-            <label>Notes</label><textarea id="healthNotes" rows="3"></textarea>
+            <label>Notes</label><textarea id="healthNotes" rows="2"></textarea>
             <button class="save-btn" onclick="save('health')">Log Health</button>
         </div>
         <div class="dashboard">
-            <div class="chart-box"><canvas id="sleepBar"></canvas></div>
+            <div class="chart-grid">
+                <div class="chart-box"><canvas id="sleepBar"></canvas></div>
+                <div class="chart-box"><canvas id="exerciseLine"></canvas></div>
+            </div>
             <div class="table-wrapper"><table id="healthTable"><thead><tr><th>Date</th><th>Sleep</th><th>Energy</th><th>Exercise</th><th>Mood</th><th>Notes</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
     </section>
@@ -121,24 +128,24 @@
             <button class="save-btn" onclick="save('money')">Log Expense</button>
         </div>
         <div class="dashboard">
-            <div class="chart-box"><canvas id="moneyPie"></canvas></div>
+            <div class="chart-box" style="height: 350px;"><canvas id="moneyPie"></canvas></div>
             <div class="table-wrapper"><table id="moneyTable"><thead><tr><th>Date</th><th>Amount</th><th>Category</th><th>Worth It</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
     </section>
 
     <section id="planner" class="content-section">
         <div class="planner-layout">
-            <div class="planner-tools">
+            <div class="planner-sidebar">
                 <div id="calendar"></div>
-                <div class="todo-section" style="margin-top:20px;">
-                    <h3>To-Do Checklist</h3>
+                <div class="todo-section">
+                    <h3 style="color:#856404">To-Do Checklist</h3>
                     <div id="todoList"></div>
-                    <input type="text" id="todoInput" placeholder="Add a task..." style="margin-top:10px;" onkeypress="if(event.key==='Enter') addTodo()">
+                    <input type="text" id="todoInput" placeholder="Enter task..." onkeypress="if(event.key==='Enter') addTodo()">
                 </div>
             </div>
-            <div class="table-wrapper">
+            <div class="table-wrapper" style="margin-top:0;">
                 <table class="planner-table">
-                    <thead><tr><th style="width:80px;">Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+                    <thead><tr><th style="width:70px;">Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
                     <tbody id="plannerBody"></tbody>
                 </table>
             </div>
@@ -147,17 +154,18 @@
 </div>
 
 <script>
-    // Tab Switching
+    // Tab Switching Logic
     document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => {
             document.querySelectorAll('.tab, .content-section').forEach(el => el.classList.remove('active'));
             t.classList.add('active');
             document.getElementById(t.dataset.target).classList.add('active');
             if(t.dataset.target === 'planner') calendar.render();
+            window.dispatchEvent(new Event('resize')); 
         });
     });
 
-    let db = JSON.parse(localStorage.getItem('omni_v4')) || { study:[], health:[], money:[] };
+    let db = JSON.parse(localStorage.getItem('omni_v5')) || { study:[], health:[], money:[] };
 
     function formatDate(dateStr) {
         if(!dateStr) return "-";
@@ -179,7 +187,7 @@
             if(w < b) w.setDate(w.getDate() + 1);
             entry.sleep = ((w - b) / 3600000).toFixed(1);
             entry.energy = document.getElementById('energy').value;
-            entry.exerciseTime = document.getElementById('exerciseTime').value;
+            entry.exerciseTime = parseFloat(document.getElementById('exerciseTime').value) || 0;
             entry.mood = document.getElementById('mood').value;
             entry.notes = document.getElementById('healthNotes').value;
         } else if(type==='money') {
@@ -188,16 +196,13 @@
             entry.worth = document.getElementById('worthIt').value;
         }
         db[type].push(entry);
-        updateDB();
+        localStorage.setItem('omni_v5', JSON.stringify(db));
+        render();
     }
 
     function deleteEntry(type, id) {
         db[type] = db[type].filter(e => e.id !== id);
-        updateDB();
-    }
-
-    function updateDB() {
-        localStorage.setItem('omni_v4', JSON.stringify(db));
+        localStorage.setItem('omni_v5', JSON.stringify(db));
         render();
     }
 
@@ -206,59 +211,45 @@
         ['study','health','money'].forEach(type => {
             document.querySelector(`#${type}Table tbody`).innerHTML = db[type].map(e => {
                 const date = formatDate(e.date);
-                if(type==='study') return `<tr><td>${date}</td><td>${e.subject}</td><td>${e.topic}</td><td>${e.hours}</td><td>${e.productivity}</td><td>${e.readiness}%</td><td><button class="del-btn" onclick="deleteEntry('study',${e.id})">✕</button></td></tr>`;
+                if(type==='study') return `<tr><td>${date}</td><td>${e.subject}</td><td>${e.topic}</td><td>${e.hours}h</td><td>${e.productivity}</td><td>${e.readiness}%</td><td><button class="del-btn" onclick="deleteEntry('study',${e.id})">✕</button></td></tr>`;
                 if(type==='health') return `<tr><td>${date}</td><td>${e.sleep}h</td><td>${e.energy}</td><td>${e.exerciseTime}m</td><td>${e.mood}</td><td>${e.notes}</td><td><button class="del-btn" onclick="deleteEntry('health',${e.id})">✕</button></td></tr>`;
                 if(type==='money') return `<tr><td>${date}</td><td>$${e.amount}</td><td>${e.category}</td><td>${e.worth}</td><td><button class="del-btn" onclick="deleteEntry('money',${e.id})">✕</button></td></tr>`;
             }).join('');
         });
 
         Object.values(charts).forEach(c => c.destroy());
+        const opt = { responsive: true, maintainAspectRatio: false };
 
-        const subs = ['MATH','MC','ADA','DBMS','BIO'];
+        // Study Charts
         const colors = { MATH: '#90caf9', MC: '#a5d6a7', ADA: '#ffcc80', DBMS: '#ef9a9a', BIO: '#ce93d8' };
         const dates = [...new Set(db.study.map(e => formatDate(e.date)))].sort();
-        
-        const datasets = subs.map(s => ({
-            label: s,
-            data: dates.map(d => {
-                const found = db.study.find(e => formatDate(e.date) === d && e.subject === s);
-                return found ? found.readiness : null;
-            }),
-            borderColor: colors[s], backgroundColor: colors[s], tension: 0.3, spanGaps: true
-        }));
-
         charts.sLine = new Chart(document.getElementById('studyLine'), { 
-            type: 'line', data: { labels: dates, datasets },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Exam Readiness' }}}
+            type: 'line', data: { labels: dates, datasets: Object.keys(colors).map(s => ({
+                label: s, data: dates.map(d => {
+                    const found = db.study.find(e => formatDate(e.date) === d && e.subject === s);
+                    return found ? found.readiness : null;
+                }), borderColor: colors[s], tension: 0.3, spanGaps: true
+            }))}, options: opt 
         });
-
-        const mData = {}; db.money.forEach(e => mData[e.category] = (mData[e.category] || 0) + parseFloat(e.amount));
-        charts.mPie = new Chart(document.getElementById('moneyPie'), {
-            type: 'pie', data: { labels: Object.keys(mData), datasets: [{ data: Object.values(mData), backgroundColor: ['#1b5e20','#2e7d32','#43a047','#66bb6a','#a5d6a7'] }]},
-            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Spending Categories' }}}
-        });
-
-        charts.slBar = new Chart(document.getElementById('sleepBar'), { 
-            type: 'bar', data: { labels: db.health.map(e => formatDate(e.date)), datasets: [{ label: 'Sleep Hours', data: db.health.map(e => e.sleep), backgroundColor: '#f48fb1' }]},
-            options: { maintainAspectRatio: false }
-        });
-
         const sHours = {}; db.study.forEach(e => sHours[e.subject] = (sHours[e.subject] || 0) + e.hours);
-        charts.sPie = new Chart(document.getElementById('studyPie'), { 
-            type: 'pie', data: { labels: Object.keys(sHours), datasets: [{ data: Object.values(sHours), backgroundColor: Object.values(colors) }]},
-            options: { maintainAspectRatio: false }
-        });
+        charts.sPie = new Chart(document.getElementById('studyPie'), { type: 'pie', data: { labels: Object.keys(sHours), datasets: [{ data: Object.values(sHours), backgroundColor: Object.values(colors) }]}, options: opt });
+
+        // Health Charts (RESTORING EXERCISE)
+        charts.slBar = new Chart(document.getElementById('sleepBar'), { type: 'bar', data: { labels: db.health.map(e => formatDate(e.date)), datasets: [{ label: 'Sleep Hours', data: db.health.map(e => e.sleep), backgroundColor: '#f48fb1' }]}, options: opt });
+        charts.exLine = new Chart(document.getElementById('exerciseLine'), { type: 'line', data: { labels: db.health.map(e => formatDate(e.date)), datasets: [{ label: 'Exercise Minutes', data: db.health.map(e => e.exerciseTime), borderColor: '#ec407a', fill: false }]}, options: opt });
+
+        // Money
+        const mData = {}; db.money.forEach(e => mData[e.category] = (mData[e.category] || 0) + parseFloat(e.amount));
+        charts.mPie = new Chart(document.getElementById('moneyPie'), { type: 'pie', data: { labels: Object.keys(mData), datasets: [{ data: Object.values(mData), backgroundColor: ['#2e7d32','#43a047','#66bb6a','#a5d6a7','#c8e6c9'] }]}, options: opt });
     }
 
-    // Planner Extras
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: '' }});
+    // Planner Setup
+    var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: '' }});
     
     function addTodo() {
         const val = document.getElementById('todoInput').value;
         if(!val) return;
-        const div = document.createElement('div');
-        div.className = 'todo-item';
+        const div = document.createElement('div'); div.className = 'todo-item';
         div.innerHTML = `<input type="checkbox"><span>${val}</span>`;
         document.getElementById('todoList').appendChild(div);
         document.getElementById('todoInput').value = '';
@@ -266,8 +257,7 @@
 
     const pBody = document.getElementById('plannerBody');
     for(let i=6; i<=22; i++) {
-        let row = `<tr><td style="font-weight:bold; background:#fafafa">${i}:00</td>` + '<td contenteditable="true"></td>'.repeat(7) + '</tr>';
-        pBody.innerHTML += row;
+        pBody.innerHTML += `<tr><td style="font-weight:bold; background:#fafafa">${i}:00</td>` + '<td contenteditable="true"></td>'.repeat(7) + '</tr>';
     }
 
     render();
