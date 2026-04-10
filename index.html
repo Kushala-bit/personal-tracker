@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Omni-Tracker Pro</title>
+    <title>Fl00</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
@@ -17,6 +17,16 @@
         body { font-family: 'Inter', sans-serif; background: #fdfbfb; color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); overflow: hidden; }
         
+        /* Updated Title Styling */
+        .top-banner { 
+            background: #333; 
+            color: white; 
+            padding: 15px 25px; 
+            font-weight: 800; 
+            letter-spacing: 3px; 
+            font-size: 1.4em; /* Increased size slightly */
+        }
+
         .tabs { display: flex; cursor: pointer; background: #fafafa; border-bottom: 1px solid var(--border); }
         .tab { flex: 1; padding: 20px; text-align: center; font-weight: 700; transition: 0.3s; color: #aaa; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; }
         .tab.active[data-target="study"] { background: var(--study-blue); color: #1e88e5; }
@@ -46,7 +56,6 @@
 
         .del-btn { color: #ff8a80; cursor: pointer; border: none; background: none; font-size: 1.2em; font-weight: bold; }
 
-        /* Planner Alignment Fix */
         #planner.active { display: block; }
         .planner-layout { display: grid; grid-template-columns: 350px 1fr; gap: 30px; align-items: start; }
         #calendar { background: white; padding: 15px; border-radius: 20px; border: 1px solid #eee; height: 450px; }
@@ -62,6 +71,7 @@
 <body>
 
 <div class="container">
+    <div class="top-banner">Fl00</div>
     <nav class="tabs">
         <div class="tab active" data-target="study">Study</div>
         <div class="tab" data-target="health">Health</div>
@@ -154,7 +164,6 @@
 </div>
 
 <script>
-    // Tab Switching Logic
     document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => {
             document.querySelectorAll('.tab, .content-section').forEach(el => el.classList.remove('active'));
@@ -165,7 +174,7 @@
         });
     });
 
-    let db = JSON.parse(localStorage.getItem('omni_v5')) || { study:[], health:[], money:[] };
+    let db = JSON.parse(localStorage.getItem('fl00_v1')) || { study:[], health:[], money:[] };
 
     function formatDate(dateStr) {
         if(!dateStr) return "-";
@@ -196,13 +205,13 @@
             entry.worth = document.getElementById('worthIt').value;
         }
         db[type].push(entry);
-        localStorage.setItem('omni_v5', JSON.stringify(db));
+        localStorage.setItem('fl00_v1', JSON.stringify(db));
         render();
     }
 
     function deleteEntry(type, id) {
         db[type] = db[type].filter(e => e.id !== id);
-        localStorage.setItem('omni_v5', JSON.stringify(db));
+        localStorage.setItem('fl00_v1', JSON.stringify(db));
         render();
     }
 
@@ -220,7 +229,6 @@
         Object.values(charts).forEach(c => c.destroy());
         const opt = { responsive: true, maintainAspectRatio: false };
 
-        // Study Charts
         const colors = { MATH: '#90caf9', MC: '#a5d6a7', ADA: '#ffcc80', DBMS: '#ef9a9a', BIO: '#ce93d8' };
         const dates = [...new Set(db.study.map(e => formatDate(e.date)))].sort();
         charts.sLine = new Chart(document.getElementById('studyLine'), { 
@@ -234,16 +242,13 @@
         const sHours = {}; db.study.forEach(e => sHours[e.subject] = (sHours[e.subject] || 0) + e.hours);
         charts.sPie = new Chart(document.getElementById('studyPie'), { type: 'pie', data: { labels: Object.keys(sHours), datasets: [{ data: Object.values(sHours), backgroundColor: Object.values(colors) }]}, options: opt });
 
-        // Health Charts (RESTORING EXERCISE)
         charts.slBar = new Chart(document.getElementById('sleepBar'), { type: 'bar', data: { labels: db.health.map(e => formatDate(e.date)), datasets: [{ label: 'Sleep Hours', data: db.health.map(e => e.sleep), backgroundColor: '#f48fb1' }]}, options: opt });
         charts.exLine = new Chart(document.getElementById('exerciseLine'), { type: 'line', data: { labels: db.health.map(e => formatDate(e.date)), datasets: [{ label: 'Exercise Minutes', data: db.health.map(e => e.exerciseTime), borderColor: '#ec407a', fill: false }]}, options: opt });
 
-        // Money
         const mData = {}; db.money.forEach(e => mData[e.category] = (mData[e.category] || 0) + parseFloat(e.amount));
         charts.mPie = new Chart(document.getElementById('moneyPie'), { type: 'pie', data: { labels: Object.keys(mData), datasets: [{ data: Object.values(mData), backgroundColor: ['#2e7d32','#43a047','#66bb6a','#a5d6a7','#c8e6c9'] }]}, options: opt });
     }
 
-    // Planner Setup
     var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: '' }});
     
     function addTodo() {
