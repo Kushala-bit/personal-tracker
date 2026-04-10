@@ -17,14 +17,16 @@
         body { font-family: 'Inter', sans-serif; background: #fdfbfb; color: var(--text); margin: 0; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); overflow: hidden; }
         
-        /* Updated Title Styling */
+        /* THE LOCKED TOP BANNER - TECH FONT */
         .top-banner { 
             background: #333; 
             color: white; 
             padding: 15px 25px; 
             font-weight: 800; 
             letter-spacing: 3px; 
-            font-size: 1.4em; /* Increased size slightly */
+            font-size: 1.6em; 
+            font-family: 'Courier New', monospace; /* This font ensures l looks like 1 */
+            text-transform: none;
         }
 
         .tabs { display: flex; cursor: pointer; background: #fafafa; border-bottom: 1px solid var(--border); }
@@ -174,7 +176,7 @@
         });
     });
 
-    let db = JSON.parse(localStorage.getItem('fl00_v1')) || { study:[], health:[], money:[] };
+    let db = JSON.parse(localStorage.getItem('fl00_final_v1')) || { study:[], health:[], money:[] };
 
     function formatDate(dateStr) {
         if(!dateStr) return "-";
@@ -205,13 +207,13 @@
             entry.worth = document.getElementById('worthIt').value;
         }
         db[type].push(entry);
-        localStorage.setItem('fl00_v1', JSON.stringify(db));
+        localStorage.setItem('fl00_final_v1', JSON.stringify(db));
         render();
     }
 
     function deleteEntry(type, id) {
         db[type] = db[type].filter(e => e.id !== id);
-        localStorage.setItem('fl00_v1', JSON.stringify(db));
+        localStorage.setItem('fl00_final_v1', JSON.stringify(db));
         render();
     }
 
