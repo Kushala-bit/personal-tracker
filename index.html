@@ -5,56 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Omni-Tracker Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <style>
         :root {
             --study-blue: #e3f2fd; --health-pink: #fce4ec;
             --money-green: #e8f5e9; --planner-yellow: #fff9c4;
-            --text: #333; --border: #eee;
+            --text: #444; --border: #eee;
         }
 
-        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #f0f2f5; color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; min-height: 90vh; }
+        body { font-family: 'Inter', sans-serif; background: #fdfbfb; color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); overflow: hidden; }
         
-        /* Navigation */
-        .tabs { display: flex; background: #fff; border-bottom: 1px solid var(--border); }
-        .tab { flex: 1; padding: 20px; text-align: center; font-weight: 700; cursor: pointer; transition: 0.3s; color: #888; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
-        .tab.active[data-target="study"] { background: var(--study-blue); color: #1976d2; }
-        .tab.active[data-target="health"] { background: var(--health-pink); color: #c2185b; }
-        .tab.active[data-target="money"] { background: var(--money-green); color: #388e3c; }
-        .tab.active[data-target="planner"] { background: var(--planner-yellow); color: #fbc02d; }
+        .tabs { display: flex; cursor: pointer; background: #fafafa; border-bottom: 1px solid var(--border); }
+        .tab { flex: 1; padding: 20px; text-align: center; font-weight: 700; transition: 0.3s; color: #aaa; text-transform: uppercase; font-size: 0.85em; letter-spacing: 1px; }
+        .tab.active[data-target="study"] { background: var(--study-blue); color: #1e88e5; }
+        .tab.active[data-target="health"] { background: var(--health-pink); color: #d81b60; }
+        .tab.active[data-target="money"] { background: var(--money-green); color: #2e7d32; }
+        .tab.active[data-target="planner"] { background: var(--planner-yellow); color: #f9a825; }
 
         .content-section { display: none; padding: 30px; animation: fadeIn 0.4s ease; }
         .content-section.active { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Sidebar Inputs */
-        .sidebar { background: #fafafa; padding: 20px; border-radius: 15px; border: 1px solid var(--border); align-self: start; }
-        h3 { margin: 0 0 20px 0; font-size: 1.2em; color: #555; }
-        label { font-size: 0.75em; font-weight: bold; color: #999; text-transform: uppercase; }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0 18px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1em; }
-        button { background: #333; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s; }
-        button:hover { background: #000; transform: translateY(-2px); }
-
-        /* Dashboard Area */
-        .dashboard { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-        .chart-box { background: #fff; padding: 15px; border-radius: 15px; border: 1px solid var(--border); height: 300px; position: relative; }
         
-        /* Table Styling */
-        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 15px; border: 1px solid var(--border); }
+        .sidebar { background: #fff; padding: 25px; border-radius: 20px; border: 1px solid var(--border); align-self: start; box-shadow: 0 4px 12px rgba(0,0,0,0.02); }
+        h3 { margin-top: 0; font-weight: 600; color: #666; font-size: 1.1em; }
+        label { font-size: 0.75em; font-weight: 700; color: #999; text-transform: uppercase; margin-bottom: 5px; display: block; }
+        input, select, textarea { width: 100%; padding: 12px; margin-bottom: 20px; border: 1px solid #eee; border-radius: 12px; font-size: 14px; background: #fcfcfc; }
+        
+        button.save-btn { background: #444; color: white; border: none; padding: 15px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 700; transition: 0.2s; }
+        button.save-btn:hover { background: #000; transform: translateY(-2px); }
+
+        .dashboard { display: flex; flex-direction: column; gap: 25px; min-width: 0; }
+        .chart-box { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid var(--border); height: 300px; }
+        
+        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 20px; border: 1px solid var(--border); }
         table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
-        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: #f9f9f9; color: #666; font-weight: 600; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #f9f9f9; }
+        th { background: #fafafa; font-weight: 600; color: #888; }
 
-        /* Planner Specific */
-        #planner.active { display: block; }
-        .planner-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 20px; }
-        .planner-table th, .planner-table td { border: 1px solid #eee; padding: 10px; text-align: center; }
-        .planner-table td:focus { background: #fffde7; outline: none; }
-        .time-col { width: 80px; background: #f5f5f5; font-weight: bold; font-size: 0.8em; }
+        .del-btn { color: #ff8a80; cursor: pointer; border: none; background: none; font-size: 1.2em; }
 
-        @media (max-width: 900px) {
-            .content-section.active { grid-template-columns: 1fr; }
-        }
+        /* Planner */
+        #planner.active { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        .planner-layout { display: grid; grid-template-columns: 400px 1fr; gap: 30px; }
+        #calendar { background: white; padding: 20px; border-radius: 20px; border: 1px solid #eee; height: 500px; }
+        .todo-section { background: #fff; padding: 20px; border-radius: 20px; border: 1px solid #eee; }
+        .todo-item { display: flex; align-items: center; gap: 10px; padding: 10px; border-bottom: 1px solid #f5f5f5; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -68,151 +66,209 @@
     </nav>
 
     <section id="study" class="content-section active">
-        <div class="sidebar">
-            <h3>Study Log</h3>
+        <div class="sidebar" style="background-color: var(--study-blue);">
+            <h3>Study Session</h3>
             <label>Date</label><input type="date" id="studyDate">
             <label>Subject</label>
-            <select id="studySub">
-                <option>Math</option><option>MC</option><option>ADA</option>
+            <select id="studySubject">
+                <option>MATH</option><option>MC</option><option>ADA</option>
                 <option>DBMS</option><option>BIO</option>
             </select>
-            <label>Topic</label><input type="text" id="studyTopic">
-            <label>Hours</label><input type="number" id="studyHours" step="0.5">
-            <label>Exam Readiness (1-100)</label><input type="number" id="studyReady">
-            <button onclick="save('study')">Add Session</button>
+            <label>Topic Name</label><input type="text" id="studyTopic">
+            <label>Hours Studied</label><input type="number" id="studyHours" step="0.5">
+            <label>Productivity (1-5)</label><input type="range" id="studyProductivity" min="1" max="5">
+            <label>Exam Readiness (1-100)</label><input type="number" id="studyReadiness">
+            <button class="save-btn" onclick="save('study')">Add Session</button>
         </div>
         <div class="dashboard">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 20px;">
                 <div class="chart-box"><canvas id="studyPie"></canvas></div>
                 <div class="chart-box"><canvas id="studyLine"></canvas></div>
             </div>
-            <div class="table-wrapper">
-                <table id="studyTable"><thead><tr><th>Date</th><th>Sub</th><th>Topic</th><th>Hrs</th><th>Ready</th></tr></thead><tbody></tbody></table>
-            </div>
+            <div class="table-wrapper"><table id="studyTable"><thead><tr><th>Date</th><th>Subject</th><th>Topic</th><th>Hours</th><th>Productivity</th><th>Readiness</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
     </section>
 
     <section id="health" class="content-section">
-        <div class="sidebar">
-            <h3>Health Log</h3>
+        <div class="sidebar" style="background-color: var(--health-pink);">
+            <h3>Health & Wellness</h3>
             <label>Date</label><input type="date" id="healthDate">
-            <label>Bedtime</label><input type="time" id="bedTime">
-            <label>Woke Up</label><input type="time" id="wakeTime">
-            <label>Exercise (Mins)</label><input type="number" id="exTime">
-            <label>Mood</label><select id="mood"><option>Happy</option><option>Neutral</option><option>Tired</option></select>
-            <button onclick="save('health')">Save Data</button>
+            <label>Bedtime (Previous Night)</label><input type="time" id="bedTime">
+            <label>Wake Up Time</label><input type="time" id="wakeTime">
+            <label>Energy Level (1-10)</label><input type="number" id="energy">
+            <label>Exercise Type</label><input type="text" id="exerciseType">
+            <label>Exercise Time (Minutes)</label><input type="number" id="exerciseTime">
+            <label>Current Mood</label><select id="mood"><option>Happy</option><option>Productive</option><option>Neutral</option><option>Tired</option></select>
+            <label>Notes</label><textarea id="healthNotes" rows="3"></textarea>
+            <button class="save-btn" onclick="save('health')">Log Health</button>
         </div>
         <div class="dashboard">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <div class="chart-box"><canvas id="sleepBar"></canvas></div>
-                <div class="chart-box"><canvas id="exLine"></canvas></div>
-            </div>
-            <div class="table-wrapper">
-                <table id="healthTable"><thead><tr><th>Date</th><th>Sleep</th><th>Exercise</th><th>Mood</th></tr></thead><tbody></tbody></table>
-            </div>
+            <div class="chart-box"><canvas id="sleepBar"></canvas></div>
+            <div class="table-wrapper"><table id="healthTable"><thead><tr><th>Date</th><th>Sleep</th><th>Energy</th><th>Exercise</th><th>Mood</th><th>Notes</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
     </section>
 
     <section id="money" class="content-section">
-        <div class="sidebar">
-            <h3>Expense Log</h3>
+        <div class="sidebar" style="background-color: var(--money-green);">
+            <h3>Expense Tracker</h3>
             <label>Date</label><input type="date" id="moneyDate">
-            <label>Amount</label><input type="number" id="moneyAmt">
-            <label>Category</label>
-            <select id="moneyCat">
+            <label>Amount Spent</label><input type="number" id="moneyAmount">
+            <label>Spending Category</label>
+            <select id="moneyCategory">
                 <option>Food</option><option>Transport</option><option>Education</option><option>Health</option><option>Shopping</option>
             </select>
-            <button onclick="save('money')">Save Expense</button>
+            <label>Was it Worth It?</label><select id="worthIt"><option>Yes</option><option>No</option></select>
+            <button class="save-btn" onclick="save('money')">Log Expense</button>
         </div>
         <div class="dashboard">
             <div class="chart-box"><canvas id="moneyPie"></canvas></div>
-            <div class="table-wrapper">
-                <table id="moneyTable"><thead><tr><th>Date</th><th>Amount</th><th>Category</th></tr></thead><tbody></tbody></table>
-            </div>
+            <div class="table-wrapper"><table id="moneyTable"><thead><tr><th>Date</th><th>Amount</th><th>Category</th><th>Worth It</th><th>Action</th></tr></thead><tbody></tbody></table></div>
         </div>
     </section>
 
     <section id="planner" class="content-section">
-        <div class="table-wrapper">
-            <table class="planner-table">
-                <thead><tr><th class="time-col">Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
-                <tbody id="plannerBody"></tbody>
-            </table>
+        <div class="planner-layout">
+            <div class="planner-tools">
+                <div id="calendar"></div>
+                <div class="todo-section" style="margin-top:20px;">
+                    <h3>To-Do Checklist</h3>
+                    <div id="todoList"></div>
+                    <input type="text" id="todoInput" placeholder="Add a task..." style="margin-top:10px;" onkeypress="if(event.key==='Enter') addTodo()">
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table class="planner-table">
+                    <thead><tr><th style="width:80px;">Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+                    <tbody id="plannerBody"></tbody>
+                </table>
+            </div>
         </div>
     </section>
 </div>
 
 <script>
-    // Navigation
+    // Tab Switching
     document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => {
             document.querySelectorAll('.tab, .content-section').forEach(el => el.classList.remove('active'));
             t.classList.add('active');
             document.getElementById(t.dataset.target).classList.add('active');
-            window.dispatchEvent(new Event('resize')); // Fixes chart rendering on tab switch
+            if(t.dataset.target === 'planner') calendar.render();
         });
     });
 
-    let db = JSON.parse(localStorage.getItem('omniDB_v2')) || { study:[], health:[], money:[] };
+    let db = JSON.parse(localStorage.getItem('omni_v4')) || { study:[], health:[], money:[] };
+
+    function formatDate(dateStr) {
+        if(!dateStr) return "-";
+        const [y, m, d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    }
 
     function save(type) {
-        let entry = { date: document.getElementById(type + 'Date').value || new Date().toLocaleDateString() };
-        if(type === 'study') {
-            entry.sub = document.getElementById('studySub').value;
+        let entry = { id: Date.now(), date: document.getElementById(type + 'Date').value };
+        if(type==='study') {
+            entry.subject = document.getElementById('studySubject').value;
             entry.topic = document.getElementById('studyTopic').value;
-            entry.hrs = parseFloat(document.getElementById('studyHours').value) || 0;
-            entry.ready = document.getElementById('studyReady').value;
-        } else if(type === 'health') {
+            entry.hours = parseFloat(document.getElementById('studyHours').value) || 0;
+            entry.productivity = document.getElementById('studyProductivity').value;
+            entry.readiness = parseInt(document.getElementById('studyReadiness').value) || 0;
+        } else if(type==='health') {
             const b = new Date("2000-01-01 " + document.getElementById('bedTime').value);
             let w = new Date("2000-01-01 " + document.getElementById('wakeTime').value);
-            if (w < b) w.setDate(w.getDate() + 1);
+            if(w < b) w.setDate(w.getDate() + 1);
             entry.sleep = ((w - b) / 3600000).toFixed(1);
-            entry.ex = document.getElementById('exTime').value;
+            entry.energy = document.getElementById('energy').value;
+            entry.exerciseTime = document.getElementById('exerciseTime').value;
             entry.mood = document.getElementById('mood').value;
-        } else if(type === 'money') {
-            entry.amt = document.getElementById('moneyAmt').value;
-            entry.cat = document.getElementById('moneyCat').value;
+            entry.notes = document.getElementById('healthNotes').value;
+        } else if(type==='money') {
+            entry.amount = document.getElementById('moneyAmount').value;
+            entry.category = document.getElementById('moneyCategory').value;
+            entry.worth = document.getElementById('worthIt').value;
         }
         db[type].push(entry);
-        localStorage.setItem('omniDB_v2', JSON.stringify(db));
+        updateDB();
+    }
+
+    function deleteEntry(type, id) {
+        db[type] = db[type].filter(e => e.id !== id);
+        updateDB();
+    }
+
+    function updateDB() {
+        localStorage.setItem('omni_v4', JSON.stringify(db));
         render();
     }
 
     let charts = {};
     function render() {
-        ['study','health','money'].forEach(t => {
-            document.querySelector(`#${t}Table tbody`).innerHTML = db[t].map(e => {
-                if(t==='study') return `<tr><td>${e.date}</td><td>${e.sub}</td><td>${e.topic}</td><td>${e.hrs}</td><td>${e.ready}%</td></tr>`;
-                if(t==='health') return `<tr><td>${e.date}</td><td>${e.sleep}h</td><td>${e.ex}m</td><td>${e.mood}</td></tr>`;
-                if(t==='money') return `<tr><td>${e.date}</td><td>$${e.amt}</td><td>${e.cat}</td></tr>`;
+        ['study','health','money'].forEach(type => {
+            document.querySelector(`#${type}Table tbody`).innerHTML = db[type].map(e => {
+                const date = formatDate(e.date);
+                if(type==='study') return `<tr><td>${date}</td><td>${e.subject}</td><td>${e.topic}</td><td>${e.hours}</td><td>${e.productivity}</td><td>${e.readiness}%</td><td><button class="del-btn" onclick="deleteEntry('study',${e.id})">✕</button></td></tr>`;
+                if(type==='health') return `<tr><td>${date}</td><td>${e.sleep}h</td><td>${e.energy}</td><td>${e.exerciseTime}m</td><td>${e.mood}</td><td>${e.notes}</td><td><button class="del-btn" onclick="deleteEntry('health',${e.id})">✕</button></td></tr>`;
+                if(type==='money') return `<tr><td>${date}</td><td>$${e.amount}</td><td>${e.category}</td><td>${e.worth}</td><td><button class="del-btn" onclick="deleteEntry('money',${e.id})">✕</button></td></tr>`;
             }).join('');
         });
 
-        if(charts.sPie) Object.values(charts).forEach(c => c.destroy());
+        Object.values(charts).forEach(c => c.destroy());
 
-        const ctxOptions = { responsive: true, maintainAspectRatio: false };
+        const subs = ['MATH','MC','ADA','DBMS','BIO'];
+        const colors = { MATH: '#90caf9', MC: '#a5d6a7', ADA: '#ffcc80', DBMS: '#ef9a9a', BIO: '#ce93d8' };
+        const dates = [...new Set(db.study.map(e => formatDate(e.date)))].sort();
         
-        // Study Charts
-        const sData = {}; db.study.forEach(e => sData[e.sub] = (sData[e.sub] || 0) + e.hrs);
-        charts.sPie = new Chart(document.getElementById('studyPie'), { type: 'pie', data: { labels: Object.keys(sData), datasets: [{ data: Object.values(sData), backgroundColor: ['#90caf9','#f48fb1','#a5d6a7','#fff176','#ce93d8'] }]}, options: ctxOptions });
-        charts.sLine = new Chart(document.getElementById('studyLine'), { type: 'line', data: { labels: db.study.map(e => e.date), datasets: [{ label: 'Readiness', data: db.study.map(e => e.ready), borderColor: '#90caf9' }]}, options: ctxOptions });
+        const datasets = subs.map(s => ({
+            label: s,
+            data: dates.map(d => {
+                const found = db.study.find(e => formatDate(e.date) === d && e.subject === s);
+                return found ? found.readiness : null;
+            }),
+            borderColor: colors[s], backgroundColor: colors[s], tension: 0.3, spanGaps: true
+        }));
 
-        // Health Charts
-        charts.slBar = new Chart(document.getElementById('sleepBar'), { type: 'bar', data: { labels: db.health.map(e => e.date), datasets: [{ label: 'Sleep', data: db.health.map(e => e.sleep), backgroundColor: '#f48fb1' }]}, options: ctxOptions });
-        charts.exLine = new Chart(document.getElementById('exLine'), { type: 'line', data: { labels: db.health.map(e => e.date), datasets: [{ label: 'Exercise', data: db.health.map(e => e.ex), borderColor: '#f06292' }]}, options: ctxOptions });
+        charts.sLine = new Chart(document.getElementById('studyLine'), { 
+            type: 'line', data: { labels: dates, datasets },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Exam Readiness' }}}
+        });
 
-        // Money
-        const mData = {}; db.money.forEach(e => mData[e.cat] = (mData[e.cat] || 0) + parseFloat(e.amt));
-        charts.mPie = new Chart(document.getElementById('moneyPie'), { type: 'pie', data: { labels: Object.keys(mData), datasets: [{ data: Object.values(mData), backgroundColor: ['#a5d6a7','#81c784','#4caf50'] }]}, options: ctxOptions });
+        const mData = {}; db.money.forEach(e => mData[e.category] = (mData[e.category] || 0) + parseFloat(e.amount));
+        charts.mPie = new Chart(document.getElementById('moneyPie'), {
+            type: 'pie', data: { labels: Object.keys(mData), datasets: [{ data: Object.values(mData), backgroundColor: ['#1b5e20','#2e7d32','#43a047','#66bb6a','#a5d6a7'] }]},
+            options: { responsive: true, maintainAspectRatio: false, plugins: { title: { display: true, text: 'Spending Categories' }}}
+        });
+
+        charts.slBar = new Chart(document.getElementById('sleepBar'), { 
+            type: 'bar', data: { labels: db.health.map(e => formatDate(e.date)), datasets: [{ label: 'Sleep Hours', data: db.health.map(e => e.sleep), backgroundColor: '#f48fb1' }]},
+            options: { maintainAspectRatio: false }
+        });
+
+        const sHours = {}; db.study.forEach(e => sHours[e.subject] = (sHours[e.subject] || 0) + e.hours);
+        charts.sPie = new Chart(document.getElementById('studyPie'), { 
+            type: 'pie', data: { labels: Object.keys(sHours), datasets: [{ data: Object.values(sHours), backgroundColor: Object.values(colors) }]},
+            options: { maintainAspectRatio: false }
+        });
     }
 
-    // Planner
+    // Planner Extras
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: '' }});
+    
+    function addTodo() {
+        const val = document.getElementById('todoInput').value;
+        if(!val) return;
+        const div = document.createElement('div');
+        div.className = 'todo-item';
+        div.innerHTML = `<input type="checkbox"><span>${val}</span>`;
+        document.getElementById('todoList').appendChild(div);
+        document.getElementById('todoInput').value = '';
+    }
+
     const pBody = document.getElementById('plannerBody');
     for(let i=6; i<=22; i++) {
-        let row = `<tr><td class="time-col">${i}:00</td>` + '<td></td>'.repeat(7) + '</tr>';
+        let row = `<tr><td style="font-weight:bold; background:#fafafa">${i}:00</td>` + '<td contenteditable="true"></td>'.repeat(7) + '</tr>';
         pBody.innerHTML += row;
     }
-    document.querySelectorAll('.planner-table td').forEach(td => { if(!td.classList.contains('time-col')) td.contentEditable = true; });
 
     render();
 </script>
