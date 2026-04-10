@@ -3,47 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Personal Omni-Tracker</title>
+    <title>Omni-Tracker Pro</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --study-blue: #e3f2fd; --study-dark: #90caf9;
-            --health-pink: #fce4ec; --health-dark: #f48fb1;
-            --money-green: #e8f5e9; --money-dark: #a5d6a7;
-            --planner-yellow: #fff9c4; --planner-dark: #fff176;
-            --text: #444;
+            --study-blue: #e3f2fd; --health-pink: #fce4ec;
+            --money-green: #e8f5e9; --planner-yellow: #fff9c4;
+            --text: #333; --border: #eee;
         }
 
-        body { font-family: 'Segoe UI', sans-serif; background: #fafafa; color: var(--text); margin: 0; padding: 20px; }
-        .container { max-width: 1100px; margin: 0 auto; background: white; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); overflow: hidden; }
+        body { font-family: 'Inter', 'Segoe UI', sans-serif; background: #f0f2f5; color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; min-height: 90vh; }
         
-        /* Tabs */
-        .tabs { display: flex; cursor: pointer; background: #f1f1f1; }
-        .tab { flex: 1; padding: 15px; text-align: center; font-weight: bold; transition: 0.3s; }
-        .tab[data-target="study"].active { background: var(--study-blue); border-bottom: 4px solid var(--study-dark); }
-        .tab[data-target="health"].active { background: var(--health-pink); border-bottom: 4px solid var(--health-dark); }
-        .tab[data-target="money"].active { background: var(--money-green); border-bottom: 4px solid var(--money-dark); }
-        .tab[data-target="planner"].active { background: var(--planner-yellow); border-bottom: 4px solid var(--planner-dark); }
+        /* Navigation */
+        .tabs { display: flex; background: #fff; border-bottom: 1px solid var(--border); }
+        .tab { flex: 1; padding: 20px; text-align: center; font-weight: 700; cursor: pointer; transition: 0.3s; color: #888; text-transform: uppercase; letter-spacing: 1px; font-size: 0.8em; }
+        .tab.active[data-target="study"] { background: var(--study-blue); color: #1976d2; }
+        .tab.active[data-target="health"] { background: var(--health-pink); color: #c2185b; }
+        .tab.active[data-target="money"] { background: var(--money-green); color: #388e3c; }
+        .tab.active[data-target="planner"] { background: var(--planner-yellow); color: #fbc02d; }
 
-        .content-section { display: none; padding: 25px; animation: fadeIn 0.3s; }
-        .content-section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .content-section { display: none; padding: 30px; animation: fadeIn 0.4s ease; }
+        .content-section.active { display: grid; grid-template-columns: 350px 1fr; gap: 30px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Grid Layouts */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .card { padding: 15px; border-radius: 10px; border: 1px solid #eee; }
-        .full-width { grid-column: span 2; }
+        /* Sidebar Inputs */
+        .sidebar { background: #fafafa; padding: 20px; border-radius: 15px; border: 1px solid var(--border); align-self: start; }
+        h3 { margin: 0 0 20px 0; font-size: 1.2em; color: #555; }
+        label { font-size: 0.75em; font-weight: bold; color: #999; text-transform: uppercase; }
+        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0 18px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1em; }
+        button { background: #333; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; transition: 0.2s; }
+        button:hover { background: #000; transform: translateY(-2px); }
 
-        input, select, textarea { width: 100%; padding: 8px; margin: 8px 0; border: 1px solid #ddd; border-radius: 5px; box-sizing: border-box; }
-        button { background: #444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; width: 100%; }
+        /* Dashboard Area */
+        .dashboard { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+        .chart-box { background: #fff; padding: 15px; border-radius: 15px; border: 1px solid var(--border); height: 300px; position: relative; }
         
-        canvas { max-height: 300px; margin-top: 20px; }
+        /* Table Styling */
+        .table-wrapper { overflow-x: auto; background: #fff; border-radius: 15px; border: 1px solid var(--border); }
+        table { width: 100%; border-collapse: collapse; font-size: 0.9em; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: #f9f9f9; color: #666; font-weight: 600; }
 
-        /* Weekly Planner Table */
-        .planner-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
-        .planner-table th, .planner-table td { border: 1px solid #eee; padding: 5px; text-align: center; }
-        .planner-table th { background: var(--planner-yellow); }
-        .time-col { font-weight: bold; width: 80px; }
+        /* Planner Specific */
+        #planner.active { display: block; }
+        .planner-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 20px; }
+        .planner-table th, .planner-table td { border: 1px solid #eee; padding: 10px; text-align: center; }
+        .planner-table td:focus { background: #fffde7; outline: none; }
+        .time-col { width: 80px; background: #f5f5f5; font-weight: bold; font-size: 0.8em; }
+
+        @media (max-width: 900px) {
+            .content-section.active { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
@@ -57,178 +68,153 @@
     </nav>
 
     <section id="study" class="content-section active">
-        <div class="grid">
-            <div class="card" style="background: var(--study-blue);">
-                <h3>Log Session</h3>
-                <input type="date" id="studyDate">
-                <select id="studySub">
-                    <option>Math</option><option>MC</option><option>ADA</option>
-                    <option>DBMS</option><option>BIO</option><option>OTHER</option>
-                </select>
-                <input type="text" id="studyTopic" placeholder="Topic">
-                <input type="number" id="studyHours" placeholder="Hours (e.g. 2)">
-                <label>Productivity (1-5)</label>
-                <input type="range" id="studyProd" min="1" max="5">
-                <label>Exam Readiness (%)</label>
-                <input type="number" id="studyReady" placeholder="0-100">
-                <button onclick="logStudy()">Add Entry</button>
+        <div class="sidebar">
+            <h3>Study Log</h3>
+            <label>Date</label><input type="date" id="studyDate">
+            <label>Subject</label>
+            <select id="studySub">
+                <option>Math</option><option>MC</option><option>ADA</option>
+                <option>DBMS</option><option>BIO</option>
+            </select>
+            <label>Topic</label><input type="text" id="studyTopic">
+            <label>Hours</label><input type="number" id="studyHours" step="0.5">
+            <label>Exam Readiness (1-100)</label><input type="number" id="studyReady">
+            <button onclick="save('study')">Add Session</button>
+        </div>
+        <div class="dashboard">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="chart-box"><canvas id="studyPie"></canvas></div>
+                <div class="chart-box"><canvas id="studyLine"></canvas></div>
             </div>
-            <div class="card">
-                <h3>Analytics</h3>
-                <canvas id="studyPie"></canvas>
-                <canvas id="studyLine"></canvas>
+            <div class="table-wrapper">
+                <table id="studyTable"><thead><tr><th>Date</th><th>Sub</th><th>Topic</th><th>Hrs</th><th>Ready</th></tr></thead><tbody></tbody></table>
             </div>
         </div>
     </section>
 
     <section id="health" class="content-section">
-        <div class="grid">
-            <div class="card" style="background: var(--health-pink);">
-                <h3>Health Log</h3>
-                <input type="time" id="bedTime" placeholder="Bedtime">
-                <input type="time" id="wakeTime" placeholder="Wake time">
-                <input type="text" id="exerciseType" placeholder="Exercise Type">
-                <input type="number" id="exerciseTime" placeholder="Exercise Mins">
-                <select id="mood"><option>Happy</option><option>Neutral</option><option>Tired</option></select>
-                <button onclick="logHealth()">Log Day</button>
+        <div class="sidebar">
+            <h3>Health Log</h3>
+            <label>Date</label><input type="date" id="healthDate">
+            <label>Bedtime</label><input type="time" id="bedTime">
+            <label>Woke Up</label><input type="time" id="wakeTime">
+            <label>Exercise (Mins)</label><input type="number" id="exTime">
+            <label>Mood</label><select id="mood"><option>Happy</option><option>Neutral</option><option>Tired</option></select>
+            <button onclick="save('health')">Save Data</button>
+        </div>
+        <div class="dashboard">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="chart-box"><canvas id="sleepBar"></canvas></div>
+                <div class="chart-box"><canvas id="exLine"></canvas></div>
             </div>
-            <div class="card">
-                <h3>Vitals</h3>
-                <canvas id="sleepBar"></canvas>
-                <canvas id="exerciseLine"></canvas>
+            <div class="table-wrapper">
+                <table id="healthTable"><thead><tr><th>Date</th><th>Sleep</th><th>Exercise</th><th>Mood</th></tr></thead><tbody></tbody></table>
             </div>
         </div>
     </section>
 
     <section id="money" class="content-section">
-        <div class="grid">
-            <div class="card" style="background: var(--money-green);">
-                <h3>Add Expense</h3>
-                <input type="number" id="amount" placeholder="Amount">
-                <select id="moneyCat">
-                    <option>Food</option><option>Transport</option>
-                    <option>Education</option><option>Health</option><option>Shopping</option>
-                </select>
-                <select id="worthIt"><option value="yes">Worth It</option><option value="no">Regret</option></select>
-                <button onclick="logMoney()">Add Expense</button>
-            </div>
-            <div class="card">
-                <h3>Spending Breakdown</h3>
-                <canvas id="moneyPie"></canvas>
+        <div class="sidebar">
+            <h3>Expense Log</h3>
+            <label>Date</label><input type="date" id="moneyDate">
+            <label>Amount</label><input type="number" id="moneyAmt">
+            <label>Category</label>
+            <select id="moneyCat">
+                <option>Food</option><option>Transport</option><option>Education</option><option>Health</option><option>Shopping</option>
+            </select>
+            <button onclick="save('money')">Save Expense</button>
+        </div>
+        <div class="dashboard">
+            <div class="chart-box"><canvas id="moneyPie"></canvas></div>
+            <div class="table-wrapper">
+                <table id="moneyTable"><thead><tr><th>Date</th><th>Amount</th><th>Category</th></tr></thead><tbody></tbody></table>
             </div>
         </div>
     </section>
 
     <section id="planner" class="content-section">
-        <div class="full-width">
-            <h3 style="background: var(--planner-yellow); padding: 10px; border-radius: 5px;">Weekly Time-Block</h3>
-            <div style="overflow-x: auto;">
-                <table class="planner-table">
-                    <thead>
-                        <tr id="plannerHeader">
-                            <th class="time-col">Time</th>
-                            <th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th>
-                        </tr>
-                    </thead>
-                    <tbody id="plannerBody">
-                        </tbody>
-                </table>
-            </div>
+        <div class="table-wrapper">
+            <table class="planner-table">
+                <thead><tr><th class="time-col">Time</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th><th>Sun</th></tr></thead>
+                <tbody id="plannerBody"></tbody>
+            </table>
         </div>
     </section>
 </div>
 
 <script>
-    // --- Navigation ---
+    // Navigation
     document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => {
             document.querySelectorAll('.tab, .content-section').forEach(el => el.classList.remove('active'));
             t.classList.add('active');
             document.getElementById(t.dataset.target).classList.add('active');
+            window.dispatchEvent(new Event('resize')); // Fixes chart rendering on tab switch
         });
     });
 
-    // --- Data Storage & Charts Init ---
+    let db = JSON.parse(localStorage.getItem('omniDB_v2')) || { study:[], health:[], money:[] };
+
+    function save(type) {
+        let entry = { date: document.getElementById(type + 'Date').value || new Date().toLocaleDateString() };
+        if(type === 'study') {
+            entry.sub = document.getElementById('studySub').value;
+            entry.topic = document.getElementById('studyTopic').value;
+            entry.hrs = parseFloat(document.getElementById('studyHours').value) || 0;
+            entry.ready = document.getElementById('studyReady').value;
+        } else if(type === 'health') {
+            const b = new Date("2000-01-01 " + document.getElementById('bedTime').value);
+            let w = new Date("2000-01-01 " + document.getElementById('wakeTime').value);
+            if (w < b) w.setDate(w.getDate() + 1);
+            entry.sleep = ((w - b) / 3600000).toFixed(1);
+            entry.ex = document.getElementById('exTime').value;
+            entry.mood = document.getElementById('mood').value;
+        } else if(type === 'money') {
+            entry.amt = document.getElementById('moneyAmt').value;
+            entry.cat = document.getElementById('moneyCat').value;
+        }
+        db[type].push(entry);
+        localStorage.setItem('omniDB_v2', JSON.stringify(db));
+        render();
+    }
+
     let charts = {};
-    const initChart = (id, type, label, bgColor) => {
-        const ctx = document.getElementById(id).getContext('2d');
-        charts[id] = new Chart(ctx, {
-            type: type,
-            data: { labels: [], datasets: [{ label: label, data: [], backgroundColor: bgColor }] }
+    function render() {
+        ['study','health','money'].forEach(t => {
+            document.querySelector(`#${t}Table tbody`).innerHTML = db[t].map(e => {
+                if(t==='study') return `<tr><td>${e.date}</td><td>${e.sub}</td><td>${e.topic}</td><td>${e.hrs}</td><td>${e.ready}%</td></tr>`;
+                if(t==='health') return `<tr><td>${e.date}</td><td>${e.sleep}h</td><td>${e.ex}m</td><td>${e.mood}</td></tr>`;
+                if(t==='money') return `<tr><td>${e.date}</td><td>$${e.amt}</td><td>${e.cat}</td></tr>`;
+            }).join('');
         });
-    };
 
-    initChart('studyPie', 'pie', 'Hours per Sub', ['#ff9999','#66b3ff','#99ff99','#ffcc99','#c2c2f0']);
-    initChart('studyLine', 'line', 'Exam Readiness', '#90caf9');
-    initChart('sleepBar', 'bar', 'Sleep Hours', '#f48fb1');
-    initChart('exerciseLine', 'line', 'Exercise (Mins)', '#f06292');
-    initChart('moneyPie', 'pie', 'Spending', ['#a5d6a7','#81c784','#4caf50','#2e7d32','#1b5e20']);
+        if(charts.sPie) Object.values(charts).forEach(c => c.destroy());
 
-    // --- Study Logic ---
-    function logStudy() {
-        const sub = document.getElementById('studySub').value;
-        const hrs = parseFloat(document.getElementById('studyHours').value);
-        const ready = parseInt(document.getElementById('studyReady').value);
+        const ctxOptions = { responsive: true, maintainAspectRatio: false };
         
-        // Update Pie
-        let idx = charts.studyPie.data.labels.indexOf(sub);
-        if(idx === -1) {
-            charts.studyPie.data.labels.push(sub);
-            charts.studyPie.data.datasets[0].data.push(hrs);
-        } else {
-            charts.studyPie.data.datasets[0].data[idx] += hrs;
-        }
-        
-        // Update Line
-        charts.studyLine.data.labels.push(new Date().toLocaleDateString());
-        charts.studyLine.data.datasets[0].data.push(ready);
-        
-        charts.studyPie.update(); charts.studyLine.update();
+        // Study Charts
+        const sData = {}; db.study.forEach(e => sData[e.sub] = (sData[e.sub] || 0) + e.hrs);
+        charts.sPie = new Chart(document.getElementById('studyPie'), { type: 'pie', data: { labels: Object.keys(sData), datasets: [{ data: Object.values(sData), backgroundColor: ['#90caf9','#f48fb1','#a5d6a7','#fff176','#ce93d8'] }]}, options: ctxOptions });
+        charts.sLine = new Chart(document.getElementById('studyLine'), { type: 'line', data: { labels: db.study.map(e => e.date), datasets: [{ label: 'Readiness', data: db.study.map(e => e.ready), borderColor: '#90caf9' }]}, options: ctxOptions });
+
+        // Health Charts
+        charts.slBar = new Chart(document.getElementById('sleepBar'), { type: 'bar', data: { labels: db.health.map(e => e.date), datasets: [{ label: 'Sleep', data: db.health.map(e => e.sleep), backgroundColor: '#f48fb1' }]}, options: ctxOptions });
+        charts.exLine = new Chart(document.getElementById('exLine'), { type: 'line', data: { labels: db.health.map(e => e.date), datasets: [{ label: 'Exercise', data: db.health.map(e => e.ex), borderColor: '#f06292' }]}, options: ctxOptions });
+
+        // Money
+        const mData = {}; db.money.forEach(e => mData[e.cat] = (mData[e.cat] || 0) + parseFloat(e.amt));
+        charts.mPie = new Chart(document.getElementById('moneyPie'), { type: 'pie', data: { labels: Object.keys(mData), datasets: [{ data: Object.values(mData), backgroundColor: ['#a5d6a7','#81c784','#4caf50'] }]}, options: ctxOptions });
     }
 
-    // --- Health Logic ---
-    function logHealth() {
-        const bed = document.getElementById('bedTime').value;
-        const wake = document.getElementById('wakeTime').value;
-        const ex = document.getElementById('exerciseTime').value;
-
-        // Simple sleep calc (handles overnight)
-        let b = new Date("2000-01-01 " + bed);
-        let w = new Date("2000-01-01 " + wake);
-        if (w < b) w.setDate(w.getDate() + 1);
-        let diff = (w - b) / 1000 / 60 / 60;
-
-        charts.sleepBar.data.labels.push(new Date().toLocaleDateString());
-        charts.sleepBar.data.datasets[0].data.push(diff.toFixed(1));
-        charts.exerciseLine.data.labels.push(new Date().toLocaleDateString());
-        charts.exerciseLine.data.datasets[0].data.push(ex);
-        
-        charts.sleepBar.update(); charts.exerciseLine.update();
-    }
-
-    // --- Money Logic ---
-    function logMoney() {
-        const cat = document.getElementById('moneyCat').value;
-        const amt = parseFloat(document.getElementById('amount').value);
-        
-        let idx = charts.moneyPie.data.labels.indexOf(cat);
-        if(idx === -1) {
-            charts.moneyPie.data.labels.push(cat);
-            charts.moneyPie.data.datasets[0].data.push(amt);
-        } else {
-            charts.moneyPie.data.datasets[0].data[idx] += amt;
-        }
-        charts.moneyPie.update();
-    }
-
-    // --- Planner Generator ---
+    // Planner
     const pBody = document.getElementById('plannerBody');
     for(let i=6; i<=22; i++) {
-        let row = `<tr><td class="time-col">${i}:00</td>`;
-        for(let j=0; j<7; j++) row += `<td contenteditable="true"></td>`;
-        row += `</tr>`;
+        let row = `<tr><td class="time-col">${i}:00</td>` + '<td></td>'.repeat(7) + '</tr>';
         pBody.innerHTML += row;
     }
+    document.querySelectorAll('.planner-table td').forEach(td => { if(!td.classList.contains('time-col')) td.contentEditable = true; });
+
+    render();
 </script>
 </body>
 </html>
