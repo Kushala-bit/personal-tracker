@@ -91,7 +91,7 @@
 </div>
 
 <script>
-    const CLOUD_URL = "https://script.google.com/macros/s/AKfycbxpgfhttps://script.google.com/macros/s/AKfycbz6OYSJz00wMjh6-5NFqCKvE_MtWebUq7nZUw6hs1ox2MqOWrlFhW2sfWHbvlqzzqdz/exec1674Mwkf1ZCHwb6BfcQIIC9VolYxPr4dx1KxsQqxeOiRfaKU5Q3g3Akitq47DUMQ/exec"; 
+    const CLOUD_URL = "https://script.google.com/macros/s/AKfycbz6OYSJz00wMjh6-5NFqCKvE_MtWebUq7nZUw6hs1ox2MqOWrlFhW2sfWHbvlqzzqdz/exec"; 
 
     document.querySelectorAll('.tab').forEach(t => {
         t.addEventListener('click', () => {
@@ -103,17 +103,16 @@
         });
     });
 
-    let db = JSON.parse(localStorage.getItem('fl00_master_v2')) || { study:[], health:[], money:[] };
+    let db = JSON.parse(localStorage.getItem('fl00_master_v2')) || { study:[], health:[], money:[], planner:[] };
 
     function formatDate(dateStr) { if(!dateStr) return "-"; const [y, m, d] = dateStr.split('-'); return `${d}/${m}/${y}`; }
 
-    // FIXED SYNC LOGIC
     async function syncToCloud(data) {
         if(!CLOUD_URL) return;
         try {
             await fetch(CLOUD_URL, {
                 method: "POST",
-                mode: "no-cors", // Crucial for Apps Script
+                mode: "no-cors",
                 headers: { "Content-Type": "text/plain" },
                 body: JSON.stringify(data)
             });
@@ -181,6 +180,11 @@
     var calendar = new FullCalendar.Calendar(document.getElementById('calendar'), { initialView: 'dayGridMonth', headerToolbar: { left: 'prev,next', center: 'title', right: '' }});
     function addTodo() {
         const val = document.getElementById('todoInput').value; if(!val) return;
+        const entry = { id: Date.now(), task: val, done: false };
+        if(!db.planner) db.planner = [];
+        db.planner.push(entry);
+        localStorage.setItem('fl00_master_v2', JSON.stringify(db));
+        syncToCloud(db);
         const div = document.createElement('div'); div.className = 'todo-item';
         div.innerHTML = `<input type="checkbox"><span>${val}</span>`;
         document.getElementById('todoList').appendChild(div); document.getElementById('todoInput').value = '';
